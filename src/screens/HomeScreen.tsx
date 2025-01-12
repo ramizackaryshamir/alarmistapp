@@ -48,15 +48,13 @@ const HomeScreen = ({navigation, route}: any) => {
 
   // Handle navigation to edit an alarm
   const handleEdit = useCallback(
-    (id: string) => {
-      const currentAlarm = alarms.find(alarm => alarm.newAlarmId === id);
-      BgYellowConsole(currentAlarm);
-      BgYellowConsole(typeof currentAlarm);
+    (alarmId: string) => {
+      const currentAlarm = alarms.find(alarm => alarm.newAlarmId === alarmId);
       if (currentAlarm) {
         try {
           // Log the date and time for debugging
-          console.log('Date:', currentAlarm.newAlarmDate);
-          console.log('Time:', currentAlarm.newAlarmTime);
+          console.log(currentAlarm.newAlarmDate);
+          console.log(currentAlarm.newAlarmTime);
 
           // Parse date (e.g., "Wed Jan 1 2025") and time (e.g., "12:00 AM")
           const dateParts = currentAlarm.newAlarmDate.split(' '); // ["Wed", "Jan", "1", "2025"]
@@ -78,21 +76,23 @@ const HomeScreen = ({navigation, route}: any) => {
           if (isNaN(alarmDateTime.getTime())) {
             throw new Error('Invalid Date Format');
           }
-
-          // Navigate with serialized data
-          navigation.navigate('Alarm Settings Screen', {
-            alarmData: {
-              newAlarmTime: new Date(),
-              // Pass ISO string
-              newAlarmRepeat: currentAlarm.newAlarmRepeat,
-              newAlarmName: currentAlarm.newAlarmName,
-              newAlarmSound: currentAlarm.newAlarmSound,
-              isNewAlarmSnoozed: currentAlarm.isNewAlarmSnoozed,
-              newAlarmId: currentAlarm.newAlarmId,
+          navigation.navigate(
+            'Alarm Settings Screen',
+            {currentAlarm},
+            {
+              alarmData: {
+                newAlarmTime: new Date(),
+                // Pass ISO string
+                newAlarmRepeat: currentAlarm.newAlarmRepeat,
+                newAlarmName: currentAlarm.newAlarmName,
+                newAlarmSound: currentAlarm.newAlarmSound,
+                isNewAlarmSnoozed: currentAlarm.isNewAlarmSnoozed,
+                newAlarmId: currentAlarm.newAlarmId,
+              },
             },
-          });
+          );
         } catch (error: any) {
-          console.error('Error creating date:', error.message);
+          console.error(error.message);
 
           // Use Alert.alert instead of alert
           Alert.alert(
