@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
-const ColorOptionButton = ({colorOption, onPress}) => {
+const ColorOptionsButton = ({colorOption, onPress}) => {
   return (
     <>
       <TouchableOpacity
@@ -14,7 +14,7 @@ const ColorOptionButton = ({colorOption, onPress}) => {
     </>
   );
 };
-export default ColorOptionButton;
+export default ColorOptionsButton;
 
 const styles = StyleSheet.create({
   colorOptionButtonContainer: {

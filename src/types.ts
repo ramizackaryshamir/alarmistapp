@@ -4,15 +4,15 @@ export interface NavigationProps {
   navigation: any;
 }
 export interface NewAlarm {
-  weekday: string;
-  date: string;
-  time: string;
-  repeat: Array<string>;
-  name: string;
-  sound: string;
-  isSnoozed: boolean;
-  id: string;
-  isActive?: boolean;
+  newAlarmId: string;
+  newAlarmWeekday: string;
+  newAlarmDate: string;
+  newAlarmTime: string;
+  newAlarmRepeat: Array<string>;
+  newAlarmName: string;
+  newAlarmSound: string;
+  isNewAlarmSnoozed: boolean;
+  //isNewAlarmActive?: boolean;
 }
 
 export interface AlarmProps {
@@ -24,6 +24,7 @@ export interface AlarmProps {
   alarmName: string;
   alarmSound?: string;
   onToggle: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   alarmIsEnabled: boolean;
 }

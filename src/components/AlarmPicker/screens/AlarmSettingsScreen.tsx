@@ -5,23 +5,43 @@ import AlarmSettingsSnoozeOption from '../components/AlarmSettingsSnoozeOption';
 import {useStyles} from './useStyles';
 import {Colors} from '../../../lib/Colors';
 import {useDarkMode} from '../../../hooks/useDarkMode';
+import {useConsoleColors} from '../../../hooks/useConsoleColors';
 
 const AlarmSettingsScreen = ({navigation, route}: any) => {
   //This component sets the state for the alarm
   const styles = useStyles();
   const {theme} = useDarkMode();
-  const [newAlarmTime, setNewAlarmTime] = useState<any>(new Date());
-  const [newAlarmRepeat, setNewAlarmRepeat] = useState<Array<string>>([]);
+  const {
+    BgMagentaConsole,
+    BgCyanConsole,
+    BgWhiteConsole,
+    BgGrayConsole,
+    BgGreenConsole,
+    BgYellowConsole,
+    BgBlueConsole,
+    BgRedConsole,
+  } = useConsoleColors();
+  const [newAlarmTime_ISO8601, setNewAlarmTime_ISO8601] = useState<Date>(
+    new Date(),
+  );
+  const [newAlarmRepeat, setNewAlarmRepeat] = useState<Array<boolean>>([]);
   const [newAlarmName, setNewAlarmName] = useState<string>('');
   const [newAlarmSound, setNewAlarmSound] = useState<string>('');
   const [isNewAlarmSnoozed, setIsNewAlarmSnoozed] = useState<boolean>(false);
-
+  //toString() changes structure of date object
+  BgRedConsole(newAlarmTime_ISO8601);
+  BgRedConsole(newAlarmTime_ISO8601.toString());
+  BgRedConsole(
+    `${newAlarmTime_ISO8601.toString()}.${newAlarmTime_ISO8601.getMilliseconds()}`,
+  );
+  //
+  BgRedConsole(typeof newAlarmTime_ISO8601);
   const handleToggleSwitch = () => {
     setIsNewAlarmSnoozed((prevState: boolean) => !prevState);
   };
 
   const handleAlarmTimeChange = (value: any) => {
-    setNewAlarmTime(value);
+    setNewAlarmTime_ISO8601(value);
   };
 
   const navigateToRepeatOptionsScreen = () => {
@@ -36,18 +56,19 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
   useEffect(() => {
     const handleSaveAndGoBackToHomeScreen = () => {
       route.params.onGoBack({
-        newAlarmTime: newAlarmTime.toString(),
+        newAlarmTime: `${newAlarmTime_ISO8601.toString()}.${newAlarmTime_ISO8601.getMilliseconds()}`,
         newAlarmRepeat,
         newAlarmName,
         newAlarmSound,
         isNewAlarmSnoozed,
         newAlarmId: Math.random().toString(),
       });
+
       navigation.goBack();
       navigation.navigate({
         name: 'Home',
         params: {
-          newAlarmTime: newAlarmTime.toString(),
+          newAlarmTime: newAlarmTime_ISO8601.toString,
           newAlarmRepeat: newAlarmRepeat,
           newAlarmName: newAlarmName,
           newAlarmSound: newAlarmSound,
@@ -56,6 +77,7 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
         merge: true,
       });
     };
+
     //console.group('\x1b[41m');
     //console.log('Alarm Settings Screen');
     //console.log('newAlarmRepeat: Alarm Settings Screen', newAlarmRepeat);
@@ -70,7 +92,7 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
     });
   }, [
     navigation,
-    newAlarmTime,
+    newAlarmTime_ISO8601,
     newAlarmRepeat,
     newAlarmName,
     newAlarmSound,
@@ -101,7 +123,7 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
     //console.log('newAlarmName:', newAlarmName);
     //console.log('newAlarmSound:', newAlarmSound);
     //console.log('isNewAlarmSnoozed:', isNewAlarmSnoozed);
-    console.groupEnd();
+    //console.groupEnd();
   }, [
     route.params?.newAlarmRepeat,
     route.params?.newAlarmSound,
@@ -109,14 +131,14 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
     newAlarmSound,
     isNewAlarmSnoozed,
     newAlarmName,
-    newAlarmTime,
+    newAlarmTime_ISO8601,
     route.params,
   ]);
 
   return (
     <View style={styles.bottomSheetContainer}>
       <TimePicker
-        newAlarmTime={newAlarmTime}
+        newAlarmTime_ISO8601={newAlarmTime_ISO8601}
         onChange={handleAlarmTimeChange}
       />
       <View style={styles.bottomSheetSettings}>

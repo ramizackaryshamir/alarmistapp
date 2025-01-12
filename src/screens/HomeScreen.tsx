@@ -1,101 +1,133 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, FlatList, Alert, TouchableOpacity, Text} from 'react-native';
+import {View, FlatList, Alert} from 'react-native';
 import Menu from '../components/Menu';
 import Alarm from '../components/Alarm';
 import {useStyles} from './useStyles.ts';
 import {useCheckAlarm} from '../hooks/useCheckAlarm.ts';
 import {NewAlarm} from '../types';
-import {generateRandomColors} from '../lib/utils.js';
+import {useConsoleColors} from '../hooks/useConsoleColors.ts';
+import {formatISO} from 'date-fns';
 
 const HomeScreen = ({navigation, route}: any) => {
-  const [newAlarm, setNewAlarm] = useState<NewAlarm>({
-    weekday: '',
-    date: '',
-    time: '',
-    repeat: [],
-    name: '',
-    sound: '',
-    isSnoozed: false,
-    id: '',
-  });
+  const {
+    BgMagentaConsole,
+    BgCyanConsole,
+    BgWhiteConsole,
+    BgGrayConsole,
+    BgGreenConsole,
+    BgYellowConsole,
+    BgBlueConsole,
+    BgRedConsole,
+  } = useConsoleColors();
   const [alarms, setAlarms] = useState<Array<NewAlarm>>([]);
   const styles = useStyles();
-  const {alarmIsEnabled, toggleEnable} = useCheckAlarm(newAlarm);
-  const handleDelete: any = useCallback((id: string) => {
-    //const updatedAlarms = alarms.filter((alarm) => alarm.id !== id);
-    setAlarms(currentAlarms => currentAlarms.filter(alarm => alarm.id !== id));
-  }, []);
 
-  console.log('newAlarm.time: ', newAlarm.time.slice(3, 5));
+  const {alarmIsEnabled, toggleEnable} = useCheckAlarm(alarms);
 
-  const formatAlarmData = data => ({
-    weekday: data.newAlarmTime.slice(0, 3),
-    date: data.newAlarmTime.slice(4, 15),
-    time: data.newAlarmTime.slice(16, 21),
-    repeat: data.newAlarmRepeat,
-    name: data.newAlarmName || 'Alarm',
-    sound: data.newAlarmSound,
-    isSnoozed: data.isNewAlarmSnoozed,
-    id: data.newAlarmId,
+  // Handle adding a new alarm
+  useEffect(() => {
+    if (route.params?.newAlarmData) {
+      BgGreenConsole(route.params.newAlarmData);
+      setAlarms(current => [
+        ...current,
+        formatAlarmData(route.params.newAlarmData),
+      ]);
+    }
+  }, [route.params?.newAlarmData]);
+
+  const formatAlarmData = (data: any) => ({
+    newAlarmId: data.newAlarmId,
+    newAlarmWeekday: data.newAlarmTime.slice(0, 3),
+    newAlarmDate: data.newAlarmTime.slice(4, 15),
+    newAlarmTime: data.newAlarmTime.slice(16, 21),
+    newAlarmRepeat: data.newAlarmRepeat,
+    newAlarmName: data.newAlarmName || 'Alarm',
+    newAlarmSound: data.newAlarmSound,
+    isNewAlarmSnoozed: data.isNewAlarmSnoozed,
   });
 
-  const navigateToAlarmSettingsScreen = useCallback(() => {
-    navigation.navigate('Alarm Settings Screen', {
-      onGoBack: data => {
-        setNewAlarm(formatAlarmData(data));
-      },
-    });
-  }, [navigation]);
+  // Handle navigation to edit an alarm
+  const handleEdit = useCallback(
+    (id: string) => {
+      const currentAlarm = alarms.find(alarm => alarm.newAlarmId === id);
+      BgYellowConsole(currentAlarm);
+      BgYellowConsole(typeof currentAlarm);
+      if (currentAlarm) {
+        try {
+          // Log the date and time for debugging
+          console.log('Date:', currentAlarm.newAlarmDate);
+          console.log('Time:', currentAlarm.newAlarmTime);
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={navigateToAlarmSettingsScreen}>
-          <Text style={styles.headerIconText}>+</Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, navigateToAlarmSettingsScreen, styles.headerIconText]);
+          // Parse date (e.g., "Wed Jan 1 2025") and time (e.g., "12:00 AM")
+          const dateParts = currentAlarm.newAlarmDate.split(' '); // ["Wed", "Jan", "1", "2025"]
+          const timeParts = currentAlarm.newAlarmTime.split(':'); // ["12", "00"]
+          const hour = parseInt(timeParts[0], 10);
+          const minute = parseInt(timeParts[1], 10);
 
-  useEffect(() => {
-    if (route.params?.newAlarmTime) {
-      setAlarms(alarms => [...alarms, newAlarm]);
-    }
-    //console.group('\x1b[40m');
-    //console.log('Home route', route.params?.newAlarmTime);
-    //console.groupEnd();
-  }, [route.params?.newAlarmTime, newAlarm]);
+          // Convert 12-hour to 24-hour format
+          const isPM = currentAlarm.newAlarmTime.includes('PM');
+          const adjustedHour =
+            isPM && hour < 12 ? hour + 12 : hour === 12 && !isPM ? 0 : hour;
 
-  //console.group('\x1b[46m');
-  //console.log('Home Screen');
-  //console.log('alarms', alarms);
-  //console.log('newAlarm.time:', newAlarm.time);
-  //console.log('newAlarm.repeat:', newAlarm.repeat);
-  //console.log('newAlarm.name:', newAlarm.name);
-  //console.log('newAlarm.sound:', newAlarm.sound);
-  //console.log('newAlarm.isSnoozed:', newAlarm.isSnoozed);
-  //console.log('newAlarm.id:', newAlarm.id);
-  //console.groupEnd();
+          // Construct the date object
+          const alarmDateTime = new Date(
+            `${dateParts[1]} ${dateParts[2]} ${dateParts[3]} ${adjustedHour}:${minute}:00`,
+          );
 
-  const renderItem = useCallback(
-    ({item}) => {
-      return (
-        <Alarm
-          key={item.id}
-          id={item.id}
-          alarmWeekday={item.weekday}
-          alarmDate={item.date}
-          alarmTime={item.time}
-          alarmRepeat={item.repeat}
-          alarmName={item.name}
-          alarmSound={item.sound}
-          onToggle={() => toggleEnable(item.id)}
-          onDelete={() => handleDelete(item.id)}
-          alarmIsEnabled={alarmIsEnabled[item.id]}
-        />
-      );
+          // Validate if the date is valid
+          if (isNaN(alarmDateTime.getTime())) {
+            throw new Error('Invalid Date Format');
+          }
+
+          // Navigate with serialized data
+          navigation.navigate('Alarm Settings Screen', {
+            alarmData: {
+              newAlarmTime: new Date(),
+              // Pass ISO string
+              newAlarmRepeat: currentAlarm.newAlarmRepeat,
+              newAlarmName: currentAlarm.newAlarmName,
+              newAlarmSound: currentAlarm.newAlarmSound,
+              isNewAlarmSnoozed: currentAlarm.isNewAlarmSnoozed,
+              newAlarmId: currentAlarm.newAlarmId,
+            },
+          });
+        } catch (error: any) {
+          console.error('Error creating date:', error.message);
+
+          // Use Alert.alert instead of alert
+          Alert.alert(
+            'Error',
+            'Failed to edit the alarm due to an invalid date or time.',
+          );
+        }
+      }
     },
-    [toggleEnable, handleDelete, alarmIsEnabled],
+    [alarms, navigation],
+  );
+
+  // Render alarms in the FlatList
+  const renderItem = useCallback(
+    ({item}: any) => (
+      <Alarm
+        key={item.newAlarmId}
+        id={item.newAlarmId}
+        alarmWeekday={item.newAlarmWeekday}
+        alarmDate={item.newAlarmDate}
+        alarmTime={item.newAlarmTime}
+        alarmRepeat={item.newAlarmRepeat}
+        alarmName={item.newAlarmSound || 'Alarm'}
+        alarmSound={item.isNewAlarmSnoozed}
+        onToggle={() => toggleEnable(item.newAlarmId)}
+        onDelete={() =>
+          setAlarms(current =>
+            current.filter(alarm => alarm.newAlarmId !== item.newAlarmId),
+          )
+        }
+        onEdit={() => handleEdit(item.newAlarmId)}
+        alarmIsEnabled={alarmIsEnabled[item.newAlarmId]}
+      />
+    ),
+    [toggleEnable, alarmIsEnabled, handleEdit],
   );
 
   return (
@@ -103,11 +135,9 @@ const HomeScreen = ({navigation, route}: any) => {
       <View style={styles.homeScreenContainer}>
         <FlatList
           contentContainerStyle={styles.alarmsContainer}
-          //data renders alarms each time because javascript equates by reference and each alarms array obj is a new obj even if none of the data has changed
           data={alarms}
-          //useCallback memoizes renderItem so that FlatList won't rre-render each item in the list unnecessarily
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.newAlarmId}
         />
       </View>
       <Menu navigation={navigation} />

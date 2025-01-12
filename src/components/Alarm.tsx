@@ -3,6 +3,7 @@ import {View, Text, Switch, TouchableOpacity, Animated} from 'react-native';
 import {useStyles} from './useStyles';
 import {usePanResponder} from '../hooks/usePanResponder';
 import {AlarmProps} from '../types';
+import {useConsoleColors} from '../hooks/useConsoleColors';
 
 const Alarm = ({
   alarmWeekday,
@@ -12,8 +13,20 @@ const Alarm = ({
   alarmName,
   onToggle,
   onDelete,
+  onEdit,
   alarmIsEnabled,
 }: AlarmProps) => {
+  const {
+    BgMagentaConsole,
+    BgCyanConsole,
+    BgWhiteConsole,
+    BgGrayConsole,
+    BgGreenConsole,
+    BgYellowConsole,
+    BgBlueConsole,
+    BgRedConsole,
+  } = useConsoleColors();
+
   const styles = useStyles();
 
   const {
@@ -21,8 +34,14 @@ const Alarm = ({
     panResponder,
     resetPosition,
     redBackgroundOpacity,
+    editTextTranslateX,
     deleteTextTranslateX,
-  } = usePanResponder(onDelete);
+  } = usePanResponder(onDelete, onEdit);
+
+  const handleEditPress = () => {
+    onEdit();
+    resetPosition();
+  };
 
   // Handle delete action directly in the component
   const handleDeletePress = () => {
@@ -30,22 +49,40 @@ const Alarm = ({
     resetPosition();
   };
 
+  BgYellowConsole(alarmTime);
   return (
     <View style={styles.container}>
+      {/*Red background*/}
       <Animated.View
         style={[styles.deleteBackground, {opacity: redBackgroundOpacity}]}>
-        <TouchableOpacity
-          style={[styles.deleteButton, {backgroundColor: 'red'}]}
-          onPress={handleDeletePress}>
-          <Animated.Text
-            style={[
-              styles.deleteButtonText,
-              {transform: [{translateX: deleteTextTranslateX}]},
-            ]}>
-            Delete
-          </Animated.Text>
-        </TouchableOpacity>
+        <View style={styles.buttonsContainer}>
+          {/*Edit Button*/}
+          <TouchableOpacity
+            style={[styles.editButton]}
+            onPress={handleEditPress}>
+            <Animated.Text
+              style={[
+                styles.editButtonText,
+                {transform: [{translateX: editTextTranslateX}]},
+              ]}>
+              Edit
+            </Animated.Text>
+          </TouchableOpacity>
+          {/*DeleteButton*/}
+          <TouchableOpacity
+            style={[styles.deleteButton]}
+            onPress={handleDeletePress}>
+            <Animated.Text
+              style={[
+                styles.deleteButtonText,
+                {transform: [{translateX: deleteTextTranslateX}]},
+              ]}>
+              Delete
+            </Animated.Text>
+          </TouchableOpacity>
+        </View>
       </Animated.View>
+      {/*Swipeable Alarm Item*/}
       <Animated.View
         {...panResponder.panHandlers}
         style={[pan.getLayout(), styles.alarmContainer]}>

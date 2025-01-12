@@ -1,13 +1,15 @@
 import {useMemo} from 'react';
 import {StyleSheet, useWindowDimensions} from 'react-native';
+import {useResponsiveFont} from '../hooks/useResponsiveFont';
 import {Colors} from '../lib/Colors';
 import {generateRandomColors} from '../lib/utils';
 
 export const useStyles = () => {
-  const {width, height} = useWindowDimensions();
+  const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = useWindowDimensions();
+  const fontSize = useResponsiveFont(16);
 
   let randomColor = generateRandomColors().toString();
-  console.log(generateRandomColors());
+  //console.log(generateRandomColors());
 
   const styles = useMemo(
     () =>
@@ -27,21 +29,92 @@ export const useStyles = () => {
         },
         deleteBackground: {
           ...StyleSheet.absoluteFillObject,
+          flexDirection: 'row', // Arrange buttons horizontally
+          padding: 0, // No padding to avoid overlaps
+          alignItems: 'center', // Vertically center buttons
+          backgroundColor: 'red',
         },
-        deleteButton: {
-          justifyContent: 'center',
-          alignItems: 'flex-end',
-          width: '100%',
-          position: 'absolute',
+
+        buttonsContainer: {
+          flexDirection: 'row', // Place buttons side by side
+          justifyContent: 'space-between', // Ensure buttons are adjacent
+          alignItems: 'stretch', // Make buttons span the full height
+          position: 'absolute', // Position the buttons container absolutely
+          right: 0, // Align to the right of the screen
           top: 0,
-          right: 0,
-          bottom: 0,
+          bottom: 0, // Make it span the full height of the red background
+          width: 100, // Set exact width to fit two 80px-wide buttons (adjust if needed)
         },
-        deleteButtonText: {
-          paddingRight: 65,
-          color: '#ffffff',
+
+        editButton: {
+          //flex: 1, // Each button takes half the container width
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '50%',
+          height: '100%', // Make the button span full height of the container
+          backgroundColor: 'orange',
+        },
+
+        editButtonText: {
+          position: 'absolute',
+          color: 'white',
+          fontSize: fontSize / 1.3,
           fontWeight: 'bold',
         },
+        deleteButton: {
+          //flex: 1, // Each button takes half the container width
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '50%',
+          height: '100%', // Make the button span full height of the container
+          backgroundColor: 'red',
+        },
+
+        deleteButtonText: {
+          color: 'white',
+          fontSize: fontSize / 1.3,
+          fontWeight: 'bold',
+        },
+        //deleteBackground: {
+        //  ...StyleSheet.absoluteFillObject,
+        //position: 'absolute',
+        //left: 0,
+        //right: 0,
+        //top: 0,
+        //bottom: 0,
+        //flexDirection: 'row',
+        //justifyContent: 'space-between',
+        //alignItems: 'center',
+        //},
+        //editButton: {
+        //  position: 'absolute',
+        //  right: 60,
+        //  justifyContent: 'center',
+        //  alignItems: 'center',
+        //  //width: 80,
+        //  height: '100%',
+        //  backgroundColor: 'orange',
+        //  borderRadius: 5,
+        //},
+        //editButtonText: {
+        //  color: 'white',
+        //  fontWeight: 'bold',
+        //},
+        //deleteButton: {
+        //  position: 'absolute',
+        //  right: 0,
+        //  justifyContent: 'center',
+        //  alignItems: 'center',
+        //  //width: 80,
+        //  height: '100%',
+        //  backgroundColor: 'red',
+        //  borderRadius: 5,
+        //},
+        //deleteButtonText: {
+        //  //paddingRight: 65,
+        //  color: '#ffffff',
+        //  fontWeight: 'bold',
+        //},
         alarmContainerLeft: {
           width: '50%',
         },
@@ -85,8 +158,8 @@ export const useStyles = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          width: width - 120,
-          height: height - 140,
+          width: SCREEN_WIDTH - 120,
+          height: SCREEN_HEIGHT - 140,
           borderWidth: 10,
           borderRadius: 15,
           backgroundColor: '#223240',
@@ -101,11 +174,11 @@ export const useStyles = () => {
           color: Colors.vibrantPink,
         },
         screenClockContainer: {
-          flexDirection: width > 500 ? 'row' : 'column',
+          flexDirection: SCREEN_WIDTH > 500 ? 'row' : 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          width: width,
-          height: height,
+          width: SCREEN_WIDTH,
+          height: SCREEN_HEIGHT,
           backgroundColor: Colors.vibrantPink,
         },
         screenClockText: {
@@ -118,7 +191,7 @@ export const useStyles = () => {
           position: 'relative',
           bottom: 0,
           paddingTop: 15,
-          width: width,
+          width: SCREEN_WIDTH,
           height: 55,
           backgroundColor: Colors.blackPurple3,
         },
@@ -126,10 +199,10 @@ export const useStyles = () => {
           fontVariant: ['small-caps', 'common-ligatures'],
           letterSpacing: 1,
           color: Colors.white,
-          fontSize: width > 500 ? 20 : 10,
+          fontSize: SCREEN_WIDTH > 500 ? 20 : 10,
         },
       }),
-    [width, height, randomColor],
+    [SCREEN_WIDTH, SCREEN_HEIGHT, randomColor, fontSize],
   );
   return styles;
 };

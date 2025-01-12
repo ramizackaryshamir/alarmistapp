@@ -1,7 +1,7 @@
 import {useState, useRef} from 'react';
 import {useWindowDimensions, PanResponder, Animated} from 'react-native';
 
-export const usePanResponder = (onDelete: any) => {
+export const usePanResponder = (onDelete: any, onEdit: any) => {
   const [isShowDelete, setIsShowDelete] = useState(false);
   const {width} = useWindowDimensions();
 
@@ -15,9 +15,15 @@ export const usePanResponder = (onDelete: any) => {
     extrapolate: 'clamp',
   });
 
+  const editTextTranslateX = pan.x.interpolate({
+    inputRange: [-width * 0.5, 0],
+    outputRange: [0, 2], //Edit text becomes visiblke earlier than Delete
+    extrapolate: 'clamp',
+  });
+
   const deleteTextTranslateX = pan.x.interpolate({
-    inputRange: [-width, 0],
-    outputRange: [0, 50], // text starts partially visible, fully visible at threshold
+    inputRange: [-width, -SWIPE_THRESHOLD_SNAP],
+    outputRange: [0, 2], // text starts partially visible, fully visible at threshold
     extrapolate: 'clamp',
   });
 
@@ -75,6 +81,7 @@ export const usePanResponder = (onDelete: any) => {
     resetPosition,
     deletePosition,
     redBackgroundOpacity,
+    editTextTranslateX,
     deleteTextTranslateX,
   };
 };
