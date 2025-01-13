@@ -7,6 +7,10 @@ export interface NewAlarm {
   newAlarmId: string;
   newAlarmWeekday: string;
   newAlarmDate: string;
+  newAlarmHour: string;
+  newAlarmMinute: string;
+  newAlarmSecond: string;
+  newAlarmGMTTime: string;
   newAlarmTime: string;
   newAlarmRepeat: Array<string>;
   newAlarmName: string;
@@ -19,6 +23,10 @@ export interface AlarmProps {
   id: string;
   alarmWeekday: string;
   alarmDate: string;
+  alarmHour: string;
+  alarmMinute: string;
+  alarmSecond: string;
+  alarmGMTTime: string;
   alarmTime: string;
   alarmRepeat: Array<string>;
   alarmName: string;

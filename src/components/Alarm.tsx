@@ -8,6 +8,10 @@ import {useConsoleColors} from '../hooks/useConsoleColors';
 const Alarm = ({
   alarmWeekday,
   alarmDate,
+  alarmHour,
+  alarmMinute,
+  alarmSecond,
+  alarmGMTTime,
   alarmTime,
   alarmRepeat,
   alarmName,
@@ -16,16 +20,7 @@ const Alarm = ({
   onEdit,
   alarmIsEnabled,
 }: AlarmProps) => {
-  const {
-    BgMagentaConsole,
-    BgCyanConsole,
-    BgWhiteConsole,
-    BgGrayConsole,
-    BgGreenConsole,
-    BgYellowConsole,
-    BgBlueConsole,
-    BgRedConsole,
-  } = useConsoleColors();
+  const {BgYellowConsole} = useConsoleColors();
 
   const styles = useStyles();
 

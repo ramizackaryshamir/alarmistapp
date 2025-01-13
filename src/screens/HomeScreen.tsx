@@ -6,19 +6,9 @@ import {useStyles} from './useStyles.ts';
 import {useCheckAlarm} from '../hooks/useCheckAlarm.ts';
 import {NewAlarm} from '../types';
 import {useConsoleColors} from '../hooks/useConsoleColors.ts';
-import {formatISO} from 'date-fns';
 
 const HomeScreen = ({navigation, route}: any) => {
-  const {
-    BgMagentaConsole,
-    BgCyanConsole,
-    BgWhiteConsole,
-    BgGrayConsole,
-    BgGreenConsole,
-    BgYellowConsole,
-    BgBlueConsole,
-    BgRedConsole,
-  } = useConsoleColors();
+  const {BgGreenConsole, BgCyanConsole} = useConsoleColors();
   const [alarms, setAlarms] = useState<Array<NewAlarm>>([]);
   const styles = useStyles();
 
@@ -37,9 +27,13 @@ const HomeScreen = ({navigation, route}: any) => {
 
   const formatAlarmData = (data: any) => ({
     newAlarmId: data.newAlarmId,
-    newAlarmWeekday: data.newAlarmTime.slice(0, 3),
-    newAlarmDate: data.newAlarmTime.slice(4, 15),
-    newAlarmTime: data.newAlarmTime.slice(16, 21),
+    newAlarmWeekday: data.newAlarmTime.slice(0, 3), // Sun, Mon, Tue, Wed, Thu, Fri, Sat
+    newAlarmDate: data.newAlarmTime.slice(4, 15), // Jan 12 2025
+    newAlarmHour: data.newAlarmTime.slice(16, 18), // 19
+    newAlarmMinute: data.newAlarmTime.slice(19, 21), // 35
+    newAlarmSecond: data.newAlarmTime.slice(22, 24), // 43
+    newAlarmGMTTime: data.newAlarmTime.slice(25, 33), // GMT-0500
+    newAlarmTime: data.newAlarmTime.slice(16, 21), // 12:00
     newAlarmRepeat: data.newAlarmRepeat,
     newAlarmName: data.newAlarmName || 'Alarm',
     newAlarmSound: data.newAlarmSound,
@@ -53,41 +47,27 @@ const HomeScreen = ({navigation, route}: any) => {
       if (currentAlarm) {
         try {
           // Log the date and time for debugging
-          console.log(currentAlarm.newAlarmDate);
-          console.log(currentAlarm.newAlarmTime);
+          BgCyanConsole(currentAlarm.newAlarmDate);
+          BgCyanConsole(currentAlarm.newAlarmTime);
 
-          // Parse date (e.g., "Wed Jan 1 2025") and time (e.g., "12:00 AM")
-          const dateParts = currentAlarm.newAlarmDate.split(' '); // ["Wed", "Jan", "1", "2025"]
-          const timeParts = currentAlarm.newAlarmTime.split(':'); // ["12", "00"]
-          const hour = parseInt(timeParts[0], 10);
-          const minute = parseInt(timeParts[1], 10);
-
-          // Convert 12-hour to 24-hour format
-          const isPM = currentAlarm.newAlarmTime.includes('PM');
-          const adjustedHour =
-            isPM && hour < 12 ? hour + 12 : hour === 12 && !isPM ? 0 : hour;
-
-          // Construct the date object
-          const alarmDateTime = new Date(
-            `${dateParts[1]} ${dateParts[2]} ${dateParts[3]} ${adjustedHour}:${minute}:00`,
-          );
-
-          // Validate if the date is valid
-          if (isNaN(alarmDateTime.getTime())) {
-            throw new Error('Invalid Date Format');
-          }
           navigation.navigate(
             'Alarm Settings Screen',
             {currentAlarm},
             {
               alarmData: {
-                newAlarmTime: new Date(),
+                newAlarmId: currentAlarm.newAlarmId,
+                newAlarmWeekday: currentAlarm.newAlarmWeekday,
+                newAlarmDate: currentAlarm.newAlarmDate,
+                newAlarmHour: currentAlarm.newAlarmHour,
+                newAlarmMinute: currentAlarm.newAlarmMinute,
+                newAlarmSecond: currentAlarm.newAlarmSecond,
+                newAlarmGMTTime: currentAlarm.newAlarmGMTTime,
+                newAlarmTime: `${currentAlarm.newAlarmWeekday} ${currentAlarm.newAlarmDate} ${currentAlarm.newAlarmHour}:${currentAlarm.newAlarmMinute}:${currentAlarm.newAlarmSecond} ${currentAlarm.newAlarmGMTTime}`,
                 // Pass ISO string
                 newAlarmRepeat: currentAlarm.newAlarmRepeat,
                 newAlarmName: currentAlarm.newAlarmName,
                 newAlarmSound: currentAlarm.newAlarmSound,
                 isNewAlarmSnoozed: currentAlarm.isNewAlarmSnoozed,
-                newAlarmId: currentAlarm.newAlarmId,
               },
             },
           );
@@ -113,6 +93,10 @@ const HomeScreen = ({navigation, route}: any) => {
         id={item.newAlarmId}
         alarmWeekday={item.newAlarmWeekday}
         alarmDate={item.newAlarmDate}
+        alarmHour={item.newAlarmHour}
+        alarmMinute={item.newAlarmMinute}
+        alarmSecond={item.newAlarmSecond}
+        alarmGMTTime={item.newAlarmGMTTime}
         alarmTime={item.newAlarmTime}
         alarmRepeat={item.newAlarmRepeat}
         alarmName={item.newAlarmSound || 'Alarm'}

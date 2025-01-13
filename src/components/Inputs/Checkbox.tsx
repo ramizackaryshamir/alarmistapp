@@ -10,13 +10,11 @@ interface CheckboxProps {
   options: Array<Option>;
   checkedValues: Array<string>;
   onChange: any;
-  //onChange: React.Dispatch<React.SetStateAction<Array<string>>>;
 }
 const Checkbox = ({options, checkedValues, onChange}: CheckboxProps) => {
   const styles = useStyles();
 
   let updatedCheckedValues: Array<string> = [...checkedValues];
-  //console.log('checkedValues', checkedValues);
 
   return (
     <>

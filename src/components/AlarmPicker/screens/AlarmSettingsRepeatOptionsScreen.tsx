@@ -5,7 +5,6 @@ import {useStyles} from './useStyles';
 
 const AlarmSettingsRepeatOptionScreen = ({navigation, route}: any) => {
   const [selectedDays, setSelectedDays] = useState<[]>([]);
-  //console.log('selectedDays', selectedDays);
 
   const styles = useStyles();
 

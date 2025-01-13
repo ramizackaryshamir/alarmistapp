@@ -11,20 +11,11 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
   //This component sets the state for the alarm
   const styles = useStyles();
   const {theme} = useDarkMode();
-  const {
-    BgMagentaConsole,
-    BgCyanConsole,
-    BgWhiteConsole,
-    BgGrayConsole,
-    BgGreenConsole,
-    BgYellowConsole,
-    BgBlueConsole,
-    BgRedConsole,
-  } = useConsoleColors();
+  const {BgRedConsole} = useConsoleColors();
   const [newAlarmTime_ISO8601, setNewAlarmTime_ISO8601] = useState<Date>(
     new Date(),
   );
-  const [newAlarmRepeat, setNewAlarmRepeat] = useState<Array<boolean>>([]);
+  const [newAlarmRepeat, setNewAlarmRepeat] = useState<Array<string>>([]);
   const [newAlarmName, setNewAlarmName] = useState<string>('');
   const [newAlarmSound, setNewAlarmSound] = useState<string>('');
   const [isNewAlarmSnoozed, setIsNewAlarmSnoozed] = useState<boolean>(false);
@@ -36,7 +27,6 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
     `${newAlarmTime_ISO8601.toString()}.${newAlarmTime_ISO8601.getMilliseconds()}`,
   );
   //
-  BgRedConsole(typeof newAlarmTime_ISO8601);
 
   const handleToggleSwitch = () => {
     setIsNewAlarmSnoozed((prevState: boolean) => !prevState);
@@ -49,7 +39,6 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
   const navigateToRepeatOptionsScreen = () => {
     navigation.navigate('Repeat', {
       onGoBack: (data: Array<string>) => {
-        //console.log(data);
         setNewAlarmRepeat(data);
       },
     });
@@ -58,7 +47,13 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
   useEffect(() => {
     const handleSaveAndGoBackToHomeScreen = () => {
       route.params.onGoBack({
-        newAlarmTime: `${newAlarmTime_ISO8601.toString()}.${newAlarmTime_ISO8601.getMilliseconds()}`,
+        newAlarmWeekday: newAlarmTime_ISO8601.toString().slice(0, 3),
+        newAlarmDate: newAlarmTime_ISO8601.toString().slice(4, 15),
+        newAlarmHour: newAlarmTime_ISO8601.toString().slice(16, 18),
+        newAlarmMinute: newAlarmTime_ISO8601.toString().slice(19, 21),
+        newAlarmSecond: newAlarmTime_ISO8601.toString().slice(22, 24),
+        newAlarmGMTTime: newAlarmTime_ISO8601.toString().slice(25, 33),
+        newAlarmTime: newAlarmTime_ISO8601.toString(),
         newAlarmRepeat,
         newAlarmName,
         newAlarmSound,
@@ -70,7 +65,13 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
       navigation.navigate({
         name: 'Home',
         params: {
-          newAlarmTime: newAlarmTime_ISO8601.toString,
+          newAlarmWeekday: newAlarmTime_ISO8601.toString().slice(0, 3),
+          newAlarmDate: newAlarmTime_ISO8601.toString().slice(4, 15),
+          newAlarmHour: newAlarmTime_ISO8601.toString().slice(16, 18),
+          newAlarmMinute: newAlarmTime_ISO8601.toString().slice(19, 21),
+          newAlarmSecond: newAlarmTime_ISO8601.toString().slice(22, 24),
+          newAlarmGMTTime: newAlarmTime_ISO8601.toString().slice(25, 33),
+          newAlarmTime: newAlarmTime_ISO8601.toString(),
           newAlarmRepeat: newAlarmRepeat,
           newAlarmName: newAlarmName,
           newAlarmSound: newAlarmSound,

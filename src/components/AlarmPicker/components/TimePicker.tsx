@@ -11,19 +11,9 @@ interface TimePickerProps {
 }
 const TimePicker = ({newAlarmTime_ISO8601, onChange}: TimePickerProps) => {
   const {theme} = useDarkMode();
-  const {
-    BgMagentaConsole,
-    BgCyanConsole,
-    BgWhiteConsole,
-    BgGrayConsole,
-    BgGreenConsole,
-    BgYellowConsole,
-    BgBlueConsole,
-    BgRedConsole,
-  } = useConsoleColors();
+  const {BgBlueConsole} = useConsoleColors();
   //newAlarmTime is returned as an ISO 8601
   BgBlueConsole(newAlarmTime_ISO8601);
-  BgBlueConsole(typeof newAlarmTime_ISO8601);
   //TODO: NOTE: NewAlarm logic should be abstracted from TimePicker to its own component 07172024
   //TODO NOTE: Most likely to Home Screen component 07242024
   //
@@ -41,18 +31,16 @@ const TimePicker = ({newAlarmTime_ISO8601, onChange}: TimePickerProps) => {
   //  return () => clearInterval(checkAlarm);
   //}, [alarmTime]);
   return (
-    <>
-      <DatePicker
-        date={newAlarmTime_ISO8601}
-        onDateChange={onChange}
-        title="Alarm"
-        style={{
-          backgroundColor:
-            theme === 'dark' ? Colors.blackPurple2 : Colors.vibrantWhite3,
-        }}
-        theme={theme === 'dark' ? 'dark' : 'light'}
-      />
-    </>
+    <DatePicker
+      date={newAlarmTime_ISO8601}
+      onDateChange={onChange}
+      title="Alarm"
+      style={{
+        backgroundColor:
+          theme === 'dark' ? Colors.blackPurple2 : Colors.vibrantWhite3,
+      }}
+      theme={theme === 'dark' ? 'dark' : 'light'}
+    />
   );
 };
 
