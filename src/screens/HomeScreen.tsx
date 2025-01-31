@@ -14,26 +14,37 @@ const HomeScreen = ({navigation, route}: any) => {
 
   const {alarmIsEnabled, toggleEnable} = useCheckAlarm(alarms);
 
-  // Handle adding a new alarm
+  // Handle adding a new alarm or updating an existing one
   useEffect(() => {
     if (route.params?.newAlarmData) {
-      BgGreenConsole(route.params.newAlarmData);
-      setAlarms(current => [
-        ...current,
-        formatAlarmData(route.params.newAlarmData),
-      ]);
+      const updatedAlarm = formatAlarmData(route.params.newAlarmData);
+      setAlarms(currentAlarms => {
+        const index = currentAlarms.findIndex(
+          alarm => alarm.newAlarmId === updatedAlarm.newAlarmId,
+        );
+
+        if (index !== -1) {
+          // Update existing alarm
+          const updatedAlarms = [...currentAlarms];
+          updatedAlarms[index] = updatedAlarm;
+          return updatedAlarms;
+        } else {
+          // Add new alarm
+          return [...currentAlarms, updatedAlarm];
+        }
+      });
     }
   }, [route.params?.newAlarmData]);
 
   const formatAlarmData = (data: any) => ({
     newAlarmId: data.newAlarmId,
-    newAlarmWeekday: data.newAlarmTime.slice(0, 3), // Sun, Mon, Tue, Wed, Thu, Fri, Sat
-    newAlarmDate: data.newAlarmTime.slice(4, 15), // Jan 12 2025
-    newAlarmHour: data.newAlarmTime.slice(16, 18), // 19
-    newAlarmMinute: data.newAlarmTime.slice(19, 21), // 35
-    newAlarmSecond: data.newAlarmTime.slice(22, 24), // 43
-    newAlarmGMTTime: data.newAlarmTime.slice(25, 33), // GMT-0500
-    newAlarmTime: data.newAlarmTime, // Keep full date object
+    newAlarmWeekday: data.newAlarmTime.slice(0, 3),
+    newAlarmDate: data.newAlarmTime.slice(4, 15),
+    newAlarmHour: data.newAlarmTime.slice(16, 18),
+    newAlarmMinute: data.newAlarmTime.slice(19, 21),
+    newAlarmSecond: data.newAlarmTime.slice(22, 24),
+    newAlarmGMTTime: data.newAlarmTime.slice(25, 33),
+    newAlarmTime: data.newAlarmTime,
     newAlarmRepeat: data.newAlarmRepeat,
     newAlarmName: data.newAlarmName || 'Alarm',
     newAlarmSound: data.newAlarmSound,
@@ -46,23 +57,23 @@ const HomeScreen = ({navigation, route}: any) => {
       const currentAlarm = alarms.find(alarm => alarm.newAlarmId === alarmId);
       if (currentAlarm) {
         try {
-          // Log the date and time for debugging
           BgCyanConsole(currentAlarm.newAlarmDate);
           BgCyanConsole(currentAlarm.newAlarmTime);
 
           /** Pseudocode:
            * - Navigate to AlarmSettingsScreen
-           * - Pass `currentAlarm` as params to populate the screen with the current alarm's data
+           * - Pass `currentAlarm` as params to populate the screen
+           * - Provide `onGoBack` callback to update alarm in HomeScreen
            */
           navigation.navigate('Alarm Settings Screen', {
             currentAlarm,
+            onGoBack: updatedAlarm => {
+              navigation.setParams({newAlarmData: updatedAlarm});
+            },
           });
         } catch (error: any) {
           console.error(error.message);
-          Alert.alert(
-            'Error',
-            'Failed to edit the alarm due to an invalid date or time.',
-          );
+          Alert.alert('Error', 'Failed to edit the alarm.');
         }
       }
     },
