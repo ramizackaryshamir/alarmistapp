@@ -33,7 +33,7 @@ const HomeScreen = ({navigation, route}: any) => {
     newAlarmMinute: data.newAlarmTime.slice(19, 21), // 35
     newAlarmSecond: data.newAlarmTime.slice(22, 24), // 43
     newAlarmGMTTime: data.newAlarmTime.slice(25, 33), // GMT-0500
-    newAlarmTime: data.newAlarmTime.slice(16, 21), // 12:00
+    newAlarmTime: data.newAlarmTime, // Keep full date object
     newAlarmRepeat: data.newAlarmRepeat,
     newAlarmName: data.newAlarmName || 'Alarm',
     newAlarmSound: data.newAlarmSound,
@@ -50,31 +50,15 @@ const HomeScreen = ({navigation, route}: any) => {
           BgCyanConsole(currentAlarm.newAlarmDate);
           BgCyanConsole(currentAlarm.newAlarmTime);
 
-          navigation.navigate(
-            'Alarm Settings Screen',
-            {currentAlarm},
-            {
-              alarmData: {
-                newAlarmId: currentAlarm.newAlarmId,
-                newAlarmWeekday: currentAlarm.newAlarmWeekday,
-                newAlarmDate: currentAlarm.newAlarmDate,
-                newAlarmHour: currentAlarm.newAlarmHour,
-                newAlarmMinute: currentAlarm.newAlarmMinute,
-                newAlarmSecond: currentAlarm.newAlarmSecond,
-                newAlarmGMTTime: currentAlarm.newAlarmGMTTime,
-                newAlarmTime: `${currentAlarm.newAlarmWeekday} ${currentAlarm.newAlarmDate} ${currentAlarm.newAlarmHour}:${currentAlarm.newAlarmMinute}:${currentAlarm.newAlarmSecond} ${currentAlarm.newAlarmGMTTime}`,
-                // Pass ISO string
-                newAlarmRepeat: currentAlarm.newAlarmRepeat,
-                newAlarmName: currentAlarm.newAlarmName,
-                newAlarmSound: currentAlarm.newAlarmSound,
-                isNewAlarmSnoozed: currentAlarm.isNewAlarmSnoozed,
-              },
-            },
-          );
+          /** Pseudocode:
+           * - Navigate to AlarmSettingsScreen
+           * - Pass `currentAlarm` as params to populate the screen with the current alarm's data
+           */
+          navigation.navigate('Alarm Settings Screen', {
+            currentAlarm,
+          });
         } catch (error: any) {
           console.error(error.message);
-
-          // Use Alert.alert instead of alert
           Alert.alert(
             'Error',
             'Failed to edit the alarm due to an invalid date or time.',
@@ -99,8 +83,9 @@ const HomeScreen = ({navigation, route}: any) => {
         alarmGMTTime={item.newAlarmGMTTime}
         alarmTime={item.newAlarmTime}
         alarmRepeat={item.newAlarmRepeat}
-        alarmName={item.newAlarmSound || 'Alarm'}
-        alarmSound={item.isNewAlarmSnoozed}
+        alarmName={item.newAlarmName}
+        alarmSound={item.newAlarmSound}
+        isNewAlarmSnoozed={item.isNewAlarmSnoozed}
         onToggle={() => toggleEnable(item.newAlarmId)}
         onDelete={() =>
           setAlarms(current =>
