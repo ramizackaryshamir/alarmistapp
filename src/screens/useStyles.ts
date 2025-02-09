@@ -25,9 +25,9 @@ export const useStyles = () => {
           backgroundColor: '#E4EBE6',
         },
         alarmsContainer: {
-          top: 60,
+          top: 20,
           justifyContent: 'center',
-          rowGap: 5,
+          rowGap: 9,
           width: width < 500 ? width - 30 : width - 10,
         },
         digitalClockScreenContainer: {

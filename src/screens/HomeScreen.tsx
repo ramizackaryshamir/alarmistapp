@@ -13,6 +13,7 @@ const HomeScreen = ({navigation, route}: any) => {
   const styles = useStyles();
 
   const {alarmIsEnabled, toggleEnable} = useCheckAlarm(alarms);
+  const minItemsToScroll = 8;
 
   // Handle adding a new alarm or updating an existing one
   useEffect(() => {
@@ -57,8 +58,9 @@ const HomeScreen = ({navigation, route}: any) => {
       const currentAlarm = alarms.find(alarm => alarm.newAlarmId === alarmId);
       if (currentAlarm) {
         try {
+          BgCyanConsole('currentAlarm.newAlamSate');
           BgCyanConsole(currentAlarm.newAlarmDate);
-          BgCyanConsole(currentAlarm.newAlarmTime);
+          // BgCyanConsole(currentAlarm.newAlarmTime);
 
           /** Pseudocode:
            * - Navigate to AlarmSettingsScreen
@@ -82,31 +84,34 @@ const HomeScreen = ({navigation, route}: any) => {
 
   // Render alarms in the FlatList
   const renderItem = useCallback(
-    ({item}: any) => (
-      <Alarm
-        key={item.newAlarmId}
-        id={item.newAlarmId}
-        alarmWeekday={item.newAlarmWeekday}
-        alarmDate={item.newAlarmDate}
-        alarmHour={item.newAlarmHour}
-        alarmMinute={item.newAlarmMinute}
-        alarmSecond={item.newAlarmSecond}
-        alarmGMTTime={item.newAlarmGMTTime}
-        alarmTime={item.newAlarmTime}
-        alarmRepeat={item.newAlarmRepeat}
-        alarmName={item.newAlarmName}
-        alarmSound={item.newAlarmSound}
-        isNewAlarmSnoozed={item.isNewAlarmSnoozed}
-        onToggle={() => toggleEnable(item.newAlarmId)}
-        onDelete={() =>
-          setAlarms(current =>
-            current.filter(alarm => alarm.newAlarmId !== item.newAlarmId),
-          )
-        }
-        onEdit={() => handleEdit(item.newAlarmId)}
-        alarmIsEnabled={alarmIsEnabled[item.newAlarmId]}
-      />
-    ),
+    ({item}: any) => {
+      console.log(item.newAlarmTime);
+      return (
+        <Alarm
+          key={item.newAlarmId}
+          id={item.newAlarmId}
+          alarmWeekday={item.newAlarmWeekday}
+          alarmDate={item.newAlarmDate}
+          alarmHour={item.newAlarmHour}
+          alarmMinute={item.newAlarmMinute}
+          alarmSecond={item.newAlarmSecond}
+          alarmGMTTime={item.newAlarmGMTTime}
+          alarmTime={item.newAlarmTime}
+          alarmRepeat={item.newAlarmRepeat}
+          alarmName={item.newAlarmName}
+          alarmSound={item.newAlarmSound}
+          isNewAlarmSnoozed={item.isNewAlarmSnoozed}
+          onToggle={() => toggleEnable(item.newAlarmId)}
+          onDelete={() =>
+            setAlarms(current =>
+              current.filter(alarm => alarm.newAlarmId !== item.newAlarmId),
+            )
+          }
+          onEdit={() => handleEdit(item.newAlarmId)}
+          alarmIsEnabled={alarmIsEnabled[item.newAlarmId]}
+        />
+      );
+    },
     [toggleEnable, alarmIsEnabled, handleEdit],
   );
 
@@ -118,6 +123,7 @@ const HomeScreen = ({navigation, route}: any) => {
           data={alarms}
           renderItem={renderItem}
           keyExtractor={item => item.newAlarmId}
+          scrollEnabled={alarms.length >= minItemsToScroll}
         />
       </View>
       <Menu navigation={navigation} />

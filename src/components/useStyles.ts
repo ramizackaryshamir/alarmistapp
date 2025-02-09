@@ -5,7 +5,11 @@ import {Colors} from '../lib/Colors';
 import {generateRandomColors} from '../lib/utils';
 
 export const useStyles = () => {
-  const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = useWindowDimensions();
+  const {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    fontScale,
+  } = useWindowDimensions();
   const fontSize = useResponsiveFont(16);
 
   let randomColor = generateRandomColors().toString();
@@ -15,15 +19,14 @@ export const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          flexDirection: 'row',
           width: '100%',
-          position: 'relative',
         },
         alarmContainer: {
           flexDirection: 'row',
-          justifyContent: 'space-between',
-          padding: 15,
-          borderBottomColor: '#dddddd',
+          alignItems: 'center',
+          paddingTop: 15,
+          paddingBottom: 15,
+          // borderBottomColor: '#dddddd',
           borderBottomWidth: 1,
           backgroundColor: randomColor,
         },
@@ -116,6 +119,8 @@ export const useStyles = () => {
         //  fontWeight: 'bold',
         //},
         alarmContainerLeft: {
+          display: 'flex',
+          flexDirection: 'column',
           width: '50%',
         },
         alarmContainerLeftTop: {
@@ -127,17 +132,30 @@ export const useStyles = () => {
         },
         alarmTextLeftTop: {
           color: 'white',
-          fontSize: 15,
+          fontSize: 16 * fontScale,
         },
         alarmContainerLeftBottom: {
-          flexDirection: 'row',
+          flexDirection: 'column',
           justifyContent: 'flex-start',
           paddingLeft: 10,
           columnGap: 5,
         },
-        alarmTextLeftBottom: {
+        alarmContainerAlarmName: {
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          paddingBottom: 3,
+        },
+        alarmTextAlarmName: {
           color: 'white',
-          fontSize: 10,
+          fontSize: 10 * fontScale,
+        },
+        alarmContainerAlarmRepeat: {
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+        },
+        alarmTextAlarmRepeat: {
+          color: 'white',
+          fontSize: 10 * fontScale,
         },
         alarmContainerRight: {
           flexDirection: 'row',
@@ -149,7 +167,7 @@ export const useStyles = () => {
         },
         alarmTextRight: {
           color: 'white',
-          fontSize: 40,
+          fontSize: 30 * fontScale,
           letterSpacing: 3,
           lineHeight: 50,
         },

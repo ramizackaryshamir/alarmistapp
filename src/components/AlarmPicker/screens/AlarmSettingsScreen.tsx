@@ -32,7 +32,7 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
   const [isNewAlarmSnoozed, setIsNewAlarmSnoozed] = useState<boolean>(
     currentAlarm.isNewAlarmSnoozed || false,
   );
-
+  BgRedConsole(newAlarmTime_ISO8601);
   const handleToggleSwitch = () => {
     setIsNewAlarmSnoozed(prevState => !prevState);
   };
@@ -60,7 +60,6 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
       newAlarmSound,
       isNewAlarmSnoozed,
     };
-
     route.params?.onGoBack(updatedAlarm);
     navigation.goBack();
   };
@@ -71,7 +70,7 @@ const AlarmSettingsScreen = ({navigation, route}: any) => {
      * - When pressed, `handleSaveAndGoBack` is called.
      */
     navigation.setOptions({
-      headerRight: () => (
+      headerRight: (): React.JSX.Element => (
         <TouchableOpacity onPress={handleSaveAndGoBack}>
           <Text style={styles.bottomSheetText}>Save</Text>
         </TouchableOpacity>

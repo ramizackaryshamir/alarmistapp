@@ -40,6 +40,17 @@ export const showISO = (timestampMS, styleLight, styleDark) => {
   return zoneISOhhmmss;
 };
 
+export const convertTo12HourFormat = time => {
+  let [hours, minutes] = time.split(':').map(Number);
+  let period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convert 0 to 12 for AM times
+  return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
+const time24 = '23:06';
+const time12 = convertTo12HourFormat(time24);
+
+console.log(time12); // Output: "11:06 PM"
 export const angleClock = (hour, minutes) => {
   const minuteAngle = minutes * 6;
   const hourAngle = hour * 30 + minutes * 0.5;
@@ -55,6 +66,6 @@ export const generateRandomColors = () => {
     Colors.vibrantDarkBlue,
     Colors.vibrantWhite,
   ];
-  let random = colorsArr[Math.floor(Math.random() * colorsArr.length)];
-  return colorsArr.splice(random, 1);
+  let randomIndex = Math.floor(Math.random() * colorsArr.length);
+  return colorsArr.splice(randomIndex, 1);
 };
